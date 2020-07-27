@@ -4,7 +4,7 @@ function retrieveEntitySentiment (line) {
   // Create our json request, w/ text, language, type & encoding
   var nlData = {
     document: {
-      language: 'en-us',
+      language: 'en-sg',
       type: 'PLAIN_TEXT',
       content: line
     },

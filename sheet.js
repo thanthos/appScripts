@@ -12,7 +12,7 @@ function getFeedsSheet(){
   var sheet = ss.getSheetByName(sheetName);
   if (!sheet ) {
     sheet = ss.insertSheet(sheetName);
-    sheet.appendRow(["Id","Title","Author","URL","Date Created","Summary", "commentRss", "Category"]);
+    sheet.appendRow(["Id","Label","Title","Author","URL","Date Created","Summary", "commentRss", "Category"]);
   }
   return sheet;
 }
@@ -84,9 +84,10 @@ function appendEntities(values){
   }catch(exception){
     console.error("Error adding analysis Entities.\nError:%s.\nID:%s",exception, id);
   }
+  SpreadsheetApp.flush();
 }
 
-function appendEntry( xmlEntry ){
+function appendEntry( xmlEntry, label ){
   
   var sheet = getFeedsSheet();
   var headerArray = getHeader();
@@ -143,13 +144,19 @@ function appendEntry( xmlEntry ){
           //TODO
           return "";
           break;     
+        case "Label": 
+          return label||"";
+          break;        
         default:
           return "";
       }
     });
     //    console.log("Processed %s",arr);
     sheet.appendRow(arr);
-    appendEntities(arr);
+    SpreadsheetApp.flush();
+//This should not be commented out when using v1    
+    //appendEntities(arr);
+    return arr;
   }
 }
 
