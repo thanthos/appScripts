@@ -1,6 +1,8 @@
 function retrieveEntitySentiment (line) {
   var apiKey =getKey() ;
-  var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntitySentiment?key=' + apiKey;
+//  var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntitySentiment?key=' + apiKey;
+    var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntities?key=' + apiKey;
+
   // Create our json request, w/ text, language, type & encoding
   var nlData = {
     document: {

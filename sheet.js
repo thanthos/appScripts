@@ -70,17 +70,25 @@ function appendEntities(values){
           case "salience":
             return item.salience;
           case "sentiment.magnitude":
-            return item.sentiment.magnitude;
+            try{
+              return item.sentiment.magnitude;
+            }catch(e){
+              return "";
+            }
+            return "";
           case "sentiment.score":
-            return item.sentiment.score;
+            try{
+              return item.sentiment.score;
+            }catch(e){
+              return "";
+            }
+            return "";
           default:
             return "";
         }
       });
       sheet.appendRow(values);     
     });
-    
-    
   }catch(exception){
     console.error("Error adding analysis Entities.\nError:%s.\nID:%s",exception, id);
   }
