@@ -53,10 +53,10 @@ function appendEntities(values){
   var d = values[feedHeader.indexOf("Date Created")];
   var summary = values[feedHeader.indexOf("Summary")];
   try{
-    var entities = retrieveEntitySentiment(summary).entities; ; 
+    var entities = retrieveEntitySentiment(summary).entities;
     entities.forEach(function(item){
       
-      var values = header.map(function(key){
+      var entityData = header.map(function(key){
         
         switch(key) {
           case "Id":
@@ -87,7 +87,7 @@ function appendEntities(values){
             return "";
         }
       });
-      sheet.appendRow(values);     
+      sheet.appendRow(entityData);     
     });
   }catch(exception){
     console.error("Error adding analysis Entities.\nError:%s.\nID:%s",exception, id);
@@ -103,13 +103,14 @@ function appendEntry( xmlEntry, label ){
     //console.log("New Article %s",xmlEntry);
     var arr = headerArray.map(function(key){
       //      console.log("Processing Key %s", key);
+      var e = null;
       switch(key) {
         case "Id":
-          var e = xmlEntry.getChild("guid")|| xmlEntry.getChild("id",xmlEntry.getNamespace());
+          e = xmlEntry.getChild("guid")|| xmlEntry.getChild("id",xmlEntry.getNamespace());
           return e.getText();
           break;
         case "Date Created": 
-          var e = xmlEntry.getChild("published",xmlEntry.getNamespace())|| xmlEntry.getChild("pubDate");
+          e = xmlEntry.getChild("published",xmlEntry.getNamespace())|| xmlEntry.getChild("pubDate");
           try{
             var d = new Date(Date.parse(e.getText()));
             return d.toString();
@@ -119,29 +120,30 @@ function appendEntry( xmlEntry, label ){
           }
           break;
         case "Author": 
-          var e = xmlEntry.getChild("author",xmlEntry.getNamespace())||xmlEntry.getChild("creator",createNameSpace);   
+          e = xmlEntry.getChild("author",xmlEntry.getNamespace())||xmlEntry.getChild("creator",createNameSpace);   
+          var value = "";
           //          console.log("What is E %s",e);
           if (!e) return "";
           if (e.getChild("name",xmlEntry.getNamespace())){
-            var value = e.getChild("name",xmlEntry.getNamespace()).getText();
+            value = e.getChild("name",xmlEntry.getNamespace()).getText();
             //            console.log("Atom - Author - %s",value);
             return value.trim();
           }else{
-            var value = e.getValue();
+            value = e.getValue();
             //            console.log("RSS - Creator - %s",e.getText());
             return value.trim();
           }
           break;
         case "URL": 
-          var e = xmlEntry.getChild("link",xmlEntry.getNamespace())|| xmlEntry.getChild("link");
+          e = xmlEntry.getChild("link",xmlEntry.getNamespace())|| xmlEntry.getChild("link");
           return e.getText()||e.getAttribute("href").getValue();          
           break;
         case "Summary": 
-          var e = xmlEntry.getChild("description")|| xmlEntry.getChild("summary",xmlEntry.getNamespace());
+          e = xmlEntry.getChild("description")|| xmlEntry.getChild("summary",xmlEntry.getNamespace());
           return e.getText().trim();          
           break;   
         case "Title": 
-          var e = xmlEntry.getChild("title")||xmlEntry.getChild("title",xmlEntry.getNamespace());
+          e = xmlEntry.getChild("title")||xmlEntry.getChild("title",xmlEntry.getNamespace());
           return e.getText();          
           break;
         case "commentRss": 

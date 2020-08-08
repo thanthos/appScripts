@@ -21,7 +21,7 @@ function retrieveEntitySentiment (line) {
   //  And make the call
   var response = UrlFetchApp.fetch(apiEndpoint, nlOptions);
   return JSON.parse(response);
-};
+}
 
 function getKey(){
   return PropertiesService.getUserProperties().getProperty("language.googleapis.com");

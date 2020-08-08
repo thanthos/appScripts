@@ -1,5 +1,5 @@
 function parsefeed(feedUrl){
-  var response = "empty";
+  
   var headers =  {
     'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36'
   };
@@ -9,13 +9,11 @@ function parsefeed(feedUrl){
     'headers': headers
   };
   
-  try{
-    response = UrlFetchApp.fetch(feedUrl,params);
-    if ( response.getResponseCode()  < 400  ) {
-      return response.getContentText();
-    }
-  }catch(exception){
-    throw exception;
+  var response = UrlFetchApp.fetch(feedUrl,params);
+  if ( response.getResponseCode()  < 400  ) {
+    return response.getContentText();
+  }else{
+    console.warn("HTTP Error %s, %s ",response.getResponseCode(),response.getContentText());
   }
 }
 

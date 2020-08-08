@@ -17,33 +17,6 @@ function getFeedSettings(){
 }
 
 
-/**
-Deprecated. Use V2 now as the function appendEntry will no longer send the items for google NLP api to process.
-*/
-function processFeeds(){
-  var feedsURL = getFeedLinks();
-  //var feedSettings = getFeedSettings();
-  if ( feedsURL && Array.isArray(feedsURL) ) {
-    console.log(feedsURL);
-    feedsURL.forEach(function(url){
-      try{
-        console.info("Getting %s",url);
-        var entries = parseXMLContent(parsefeed(url));
-        console.info("Number of Feeds: %s",entries.length);
-        insertedCount = 0;
-        entries.forEach(function(item){
-          var result = appendEntry(item);
-//          appendEntities(result);
-        });
-        console.info("Inserted %s",insertedCount);
-      }catch (exception){
-        console.error("Issue Encountered: %s, Parsing Feed %s",url, exception);
-      }
-    });
-  }
-  console.log("Completed");
-}
-
 
 function processFeed_v2(){
   var feedSettings = getFeedSettings();
@@ -55,11 +28,11 @@ function processFeed_v2(){
   
   feedSettings.forEach(function(row){
     var url = row[header.indexOf('Feeds URL')];
-    var pattern = row[header.indexOf('Pattern')];
+    //var pattern = row[header.indexOf('Pattern')]; // To enable when need
     var enabled = row[header.indexOf('Enable?')];
     var label = row[header.indexOf('Label')];
     var nla_enabled = row[header.indexOf('NLA Enable?')];
-    var label = row[header.indexOf('Label')];
+
     try{
       insertedCount = 0;
       if ( enabled ) {
