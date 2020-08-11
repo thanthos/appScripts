@@ -3,8 +3,6 @@ const entitySheetNames = "entity";
 const createNameSpace = XmlService.getNamespace ('http://purl.org/dc/elements/1.1/');
 var headerBuffer = null;
 var entityHeaderBuffer = null;
-var insertedCount = 0;
-
 
 function getFeedsSheet(){
   //Change this to redirect the source to another sheet.
@@ -27,10 +25,7 @@ function getEntitiesSheet(){
   return sheet;
 }
 
-
-
 function isArticlePresent(element) {
-  
   //Can improve this by limiting the search to the ID column.
   var sheet = getFeedsSheet();
   var id = element.getChild("guid")||element.getChild("id",element.getNamespace());
@@ -42,7 +37,7 @@ function isArticlePresent(element) {
     }
   }
   insertedCount++;
-  return false; 
+  return false;
 }
 
 function appendEntities(values){
@@ -55,9 +50,9 @@ function appendEntities(values){
   try{
     var entities = retrieveEntitySentiment(summary).entities;
     entities.forEach(function(item){
-      
+
       var entityData = header.map(function(key){
-        
+
         switch(key) {
           case "Id":
             return id;
@@ -87,7 +82,7 @@ function appendEntities(values){
             return "";
         }
       });
-      sheet.appendRow(entityData);     
+      sheet.appendRow(entityData);
     });
   }catch(exception){
     console.error("Error adding analysis Entities.\nError:%s.\nID:%s",exception, id);
@@ -96,7 +91,7 @@ function appendEntities(values){
 }
 
 function appendEntry( xmlEntry, label ){
-  
+
   var sheet = getFeedsSheet();
   var headerArray = getHeader();
   if (!isArticlePresent(xmlEntry) ){
@@ -109,7 +104,7 @@ function appendEntry( xmlEntry, label ){
           e = xmlEntry.getChild("guid")|| xmlEntry.getChild("id",xmlEntry.getNamespace());
           return e.getText();
           break;
-        case "Date Created": 
+        case "Date Created":
           e = xmlEntry.getChild("published",xmlEntry.getNamespace())|| xmlEntry.getChild("pubDate");
           try{
             var d = new Date(Date.parse(e.getText()));
@@ -119,8 +114,8 @@ function appendEntry( xmlEntry, label ){
             return e.getText();
           }
           break;
-        case "Author": 
-          e = xmlEntry.getChild("author",xmlEntry.getNamespace())||xmlEntry.getChild("creator",createNameSpace);   
+        case "Author":
+          e = xmlEntry.getChild("author",xmlEntry.getNamespace())||xmlEntry.getChild("creator",createNameSpace);
           var value = "";
           //          console.log("What is E %s",e);
           if (!e) return "";
@@ -134,29 +129,29 @@ function appendEntry( xmlEntry, label ){
             return value.trim();
           }
           break;
-        case "URL": 
+        case "URL":
           e = xmlEntry.getChild("link",xmlEntry.getNamespace())|| xmlEntry.getChild("link");
-          return e.getText()||e.getAttribute("href").getValue();          
+          return e.getText()||e.getAttribute("href").getValue();
           break;
-        case "Summary": 
+        case "Summary":
           e = xmlEntry.getChild("description")|| xmlEntry.getChild("summary",xmlEntry.getNamespace());
-          return e.getText().trim();          
-          break;   
-        case "Title": 
-          e = xmlEntry.getChild("title")||xmlEntry.getChild("title",xmlEntry.getNamespace());
-          return e.getText();          
+          return e.getText().trim();
           break;
-        case "commentRss": 
+        case "Title":
+          e = xmlEntry.getChild("title")||xmlEntry.getChild("title",xmlEntry.getNamespace());
+          return e.getText();
+          break;
+        case "commentRss":
           //TODO
           return "";
-          break;                   
-        case "Category": 
+          break;
+        case "Category":
           //TODO
           return "";
-          break;     
-        case "Label": 
+          break;
+        case "Label":
           return label||"";
-          break;        
+          break;
         default:
           return "";
       }
@@ -164,13 +159,11 @@ function appendEntry( xmlEntry, label ){
     //    console.log("Processed %s",arr);
     sheet.appendRow(arr);
     SpreadsheetApp.flush();
-//This should not be commented out when using v1    
+//This should not be commented out when using v1
     //appendEntities(arr);
     return arr;
   }
 }
-
-
 
 function getHeader(){
   if (!headerBuffer){

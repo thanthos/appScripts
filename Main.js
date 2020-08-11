@@ -1,3 +1,6 @@
+var insertedCount = 0;
+
+
 function getFeedLinks() {
   var settings = getFeedSettings();
   var index = getSourceHeader().indexOf('Feeds URL');
@@ -21,11 +24,11 @@ function getFeedSettings(){
 function processFeed_v2(){
   var feedSettings = getFeedSettings();
   var header = getSourceHeader();
-  
+
   var lock = LockService.getScriptLock();
   // Wait for up to 30 seconds for other processes to finish.
   lock.waitLock(30000);
-  
+
   feedSettings.forEach(function(row){
     var url = row[header.indexOf('Feeds URL')];
     //var pattern = row[header.indexOf('Pattern')]; // To enable when need
@@ -52,12 +55,12 @@ function processFeed_v2(){
     }catch (exception){
       console.error("Issue Encountered: %s, Parsing Feed %s\n%s",exception, label, exception.stack);
     }
-    
+
     // Release the lock so that other processes can continue.
-    
+
   });
   lock.releaseLock();
-  console.log("Completed");  
+  console.log("Completed");
 }
 
 
@@ -69,7 +72,7 @@ function getSourceHeader(){
 
 function housekeepData(){
   //Move the data from 5 weeks ago to another sheet.
-  
-  
-  
+
+
+
 }
