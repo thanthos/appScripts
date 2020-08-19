@@ -72,7 +72,20 @@ function getSourceHeader(){
 
 function housekeepData(){
   //Move the data from 5 weeks ago to another sheet.
-
-
-
+  var today = new Date();
+  var cutoffDate = null;
+  if ( today.getMonth() == 0 ){
+    cutoffDate = new Date("12/1/"+(today.getFullYear()-1)+" 0:00 +8");
+  }else{
+    cutoffDate = new Date(""+today.getMonth()+"/1/"+(today.getFullYear())+" 0:00 +8");  
+  }
+  var lock = LockService.getScriptLock();
+  // Wait for up to 30 seconds for other processes to finish.
+  lock.waitLock(30000);
+  
+  housekeep_feedSheet(cutoffDate);
+  housekeep_entitySheet(cutoffDate);
+  
+  lock.releaseLock();
+  console.log("Completed");
 }

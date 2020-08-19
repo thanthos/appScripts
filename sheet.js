@@ -159,7 +159,7 @@ function appendEntry( xmlEntry, label ){
     //    console.log("Processed %s",arr);
     sheet.appendRow(arr);
     SpreadsheetApp.flush();
-//This should not be commented out when using v1
+    //This should not be commented out when using v1
     //appendEntities(arr);
     return arr;
   }
@@ -181,4 +181,83 @@ function getEntityHeader(){
     entityHeaderBuffer = range.getValues()[0];
   }
   return entityHeaderBuffer;
+}
+
+
+function _housekeep_sheet(sheet, cutoffDate, maxRows){
+  var rowCount = 0;
+
+  var header = sheet.getRange(1, 1, 1, sheet.getLastColumn());
+  var dateIndex = header.getValues()[0].indexOf("Date Created");
+
+  var target_sheet = SpreadsheetApp.getActive().getSheetByName(sheet.getName()+"_"+cutoffDate.getFullYear()+"_"+cutoffDate.getMonth());
+  if ( !target_sheet ){
+    target_sheet = SpreadsheetApp.getActive().insertSheet(sheet.getName()+"_"+cutoffDate.getFullYear()+"_"+cutoffDate.getMonth());
+    target_sheet.appendRow(header.getValues()[0]);
+  }
+
+  var effectiveMaxRows = maxRows || sheet.getLastRow();
+  console.log("effectiveMaxRows -- %s",effectiveMaxRows);
+
+
+  //-- method 1
+  //  for (  var i = 0, rowIndex = 2; i < effectiveMaxRows; i++){
+  //
+  //    var row = sheet.getRange(rowIndex, 1, 1, sheet.getLastColumn());
+  //    var rowValues = row.getValues();
+  //    var rec_date = new Date(rowValues[0][dateIndex]);
+  //    if ( rec_date < cutoffDate ) {
+  //      target_sheet.appendRow(rowValues[0]);
+  //      sheet.deleteRow(rowIndex);
+  //      rowCount++;
+  //    }else{
+  //      rowIndex++;
+  //    }
+  //  }
+  // End Method 1
+
+  // Method 2
+  var values = sheet.getRange(2,1,effectiveMaxRows,sheet.getLastColumn()).getValues();
+  console.log("Values.Length %s", values.length);
+
+  try{
+
+    for ( var i = 0, rowIndex = 2; i < values.length; i++){
+      var rowValues = values[i];
+      var rec_date = new Date(rowValues[dateIndex]);
+      //console.log("Check Date %s", rec_date);
+      if ( rec_date < cutoffDate ) {
+        target_sheet.appendRow(rowValues);
+        sheet.deleteRow(rowIndex);
+        rowCount++;
+      }else{
+        //console.log("Valid ");
+        rowIndex++;
+      }
+    }
+  }catch(exception){
+      console.error("Encountered Exception %s,\n%s",exception, exception.stack);
+  }finally{
+    SpreadsheetApp.flush();
+    console.info("Rows Moved: %s",rowCount);
+  }
+  // - End Method 2
+}
+
+function housekeep_feedSheet(cutoffDate){
+  var sheet = SpreadsheetApp.getActive().getSheetByName("feeds");
+  _housekeep_sheet(sheet, cutoffDate, 250);
+}
+
+function housekeep_entitySheet(cutoffDate){
+   var sheet = SpreadsheetApp.getActive().getSheetByName("entity");
+  _housekeep_sheet(sheet, cutoffDate, 250);
+
+}
+
+function test_continueRun(){
+  var d = new Date("8/1/2020 0:00 +8");
+  var sheet = SpreadsheetApp.getActive().getSheetByName("Copy of feeds");
+  _housekeep_sheet(sheet, d, 5);
+
 }
