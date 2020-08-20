@@ -1,10 +1,12 @@
 function retrieveEntitySentiment (line) {
   var apiKey =getKey() ;
-  var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntitySentiment?key=' + apiKey;
+//  var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntitySentiment?key=' + apiKey;
+    var apiEndpoint = 'https://language.googleapis.com/v1/documents:analyzeEntities?key=' + apiKey;
+
   // Create our json request, w/ text, language, type & encoding
   var nlData = {
     document: {
-      language: 'en-us',
+      language: 'en-sg',
       type: 'PLAIN_TEXT',
       content: line
     },
@@ -19,7 +21,7 @@ function retrieveEntitySentiment (line) {
   //  And make the call
   var response = UrlFetchApp.fetch(apiEndpoint, nlOptions);
   return JSON.parse(response);
-};
+}
 
 function getKey(){
   return PropertiesService.getUserProperties().getProperty("language.googleapis.com");
