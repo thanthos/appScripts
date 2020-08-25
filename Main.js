@@ -4,14 +4,14 @@ var insertedCount = 0;
 function getFeedLinks() {
   var settings = getFeedSettings();
   var index = getSourceHeader().indexOf('Feeds URL');
-  if (index != -1 ){
-    var result = [];
+  var result = [];
+  if (index !== -1 ){
     settings.forEach(function(row){
       if ( row[index] ) {
         result.push(row[index]); }
     });
-    return result;
   }
+  return result;
 }
 
 function getFeedSettings(){
@@ -31,10 +31,9 @@ function processFeed_v2(){
 
   feedSettings.forEach(function(row){
     var url = row[header.indexOf('Feeds URL')];
-    //var pattern = row[header.indexOf('Pattern')]; // To enable when need
     var enabled = row[header.indexOf('Enable?')];
     var label = row[header.indexOf('Label')];
-    var nla_enabled = row[header.indexOf('NLA Enable?')];
+    var nlaEnabled = row[header.indexOf('NLA Enable?')];
 
     try{
       insertedCount = 0;
@@ -44,13 +43,15 @@ function processFeed_v2(){
         console.info("Number of Feeds: %s",entries.length);
         entries.forEach(function(item){
           var result = appendEntry(item,label);
-          if (nla_enabled && result ) {
+          if (nlaEnabled && result ) {
             appendEntities(result);
           }
         });
         console.info("Inserted %s",insertedCount);
       }else{
-        if ( url ) console.warn("%s is disabled",label);
+        if ( url ) {
+          console.warn("%s is disabled",label);
+        }
       }
     }catch (exception){
       console.error("Issue Encountered: %s, Parsing Feed %s\n%s",exception, label, exception.stack);
@@ -74,18 +75,18 @@ function housekeepData(){
   //Move the data from 5 weeks ago to another sheet.
   var today = new Date();
   var cutoffDate = null;
-  if ( today.getMonth() == 0 ){
-    cutoffDate = new Date("12/1/"+(today.getFullYear()-1)+" 0:00 +8");
+  if ( today.getMonth() === 0 ){
+    cutoffDate = new Date(`12/1/${today.getFullYear()-1} 0:00 +8`);
   }else{
-    cutoffDate = new Date(""+today.getMonth()+"/1/"+(today.getFullYear())+" 0:00 +8");  
+    cutoffDate = new Date(`${today.getMonth()}/1/${today.getFullYear()} 0:00 +8`);
   }
   var lock = LockService.getScriptLock();
   // Wait for up to 30 seconds for other processes to finish.
   lock.waitLock(30000);
-  
+
   housekeep_feedSheet(cutoffDate);
   housekeep_entitySheet(cutoffDate);
-  
+
   lock.releaseLock();
   console.log("Completed");
 }

@@ -1,4 +1,8 @@
+coverage.info
+coverage/**
 .clasp.json
 .scannerwork/**
 test.js
 token
+package.json
+coverage.info
